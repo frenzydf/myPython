@@ -1,0 +1,20 @@
+2024-02-28 12:12:28,720 - INFO - FW - Execute Purge WhiteList Group
+2024-02-28 12:12:29,522 - INFO - FW - PUT code Purge FW_Whitelist_1 response: 200
+2024-02-28 12:12:30,328 - INFO - FW - PUT code Purge FW_Whitelist_2 response: 200
+2024-02-28 12:12:31,124 - INFO - FW - PUT code Purge FW_Whitelist_3 response: 200
+2024-02-28 12:12:31,908 - INFO - FW - PUT code Purge FW_Whitelist_4 response: 200
+2024-02-28 12:12:31,910 - INFO - LOCAL - END IP WhiteList
+2024-02-28 12:17:52,034 - INFO - FW - Execute Purge WhiteList Group
+2024-02-28 12:17:52,846 - INFO - FW - PUT code Purge FW_Whitelist_1 response: 200
+2024-02-28 12:17:53,644 - INFO - FW - PUT code Purge FW_Whitelist_2 response: 200
+2024-02-28 12:17:54,446 - INFO - FW - PUT code Purge FW_Whitelist_3 response: 200
+2024-02-28 12:17:55,235 - INFO - FW - PUT code Purge FW_Whitelist_4 response: 200
+2024-02-28 12:17:55,236 - INFO - FW - Reading Firewall API Get Address List
+2024-02-28 12:17:57,790 - INFO - FW - API Response Code: 200
+2024-02-28 12:17:57,811 - INFO - FW - API Response LEN: 3424
+2024-02-28 12:17:57,812 - INFO - FW - Found 1875 IPW_ Adress Objects
+2024-02-28 12:17:57,816 - INFO - LOCAL - Reading WhiteList.txt file
+2024-02-28 12:17:57,817 - INFO - LOCAL - Found 1 in WhiteList.txt registers
+2024-02-28 12:17:57,817 - INFO - FW - DEL 1874 Address list in progress
+2024-02-28 12:42:52,399 - INFO - FW - DEL 1870 Address deleted and 4 skiped
+2024-02-28 12:42:52,402 - INFO - LOCAL - END IP WhiteList

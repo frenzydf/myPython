@@ -1,0 +1,173 @@
+{
+    "query": {
+      "bool": {
+        "must": [],
+        "filter":
+        [
+          {
+            "bool": {
+              "filter": [
+                {
+                  "bool": {
+                    "filter": [
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "exists": {
+                                "field": "related.ip"
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      },
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "exists": {
+                                "field": "related.user"
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "bool": {
+                    "should": [
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "term": {
+                                "event.action": {
+                                  "value": "UserLoggedIn"
+                                }
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      },
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "term": {
+                                "event.action": {
+                                  "value": "ReactedToMessage"
+                                }
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      },
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "term": {
+                                "event.action": {
+                                  "value": "AddedToGroup"
+                                }
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      },
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "term": {
+                                "event.action": {
+                                  "value": "MessageCreatedHasLink"
+                                }
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      },
+                      {
+                        "bool": {
+                          "should": [
+                            {
+                              "term": {
+                                "event.action": {
+                                  "value": "MailItemsAccessed"
+                                }
+                              }
+                            }
+                          ],
+                          "minimum_should_match": 1
+                        }
+                      }
+                    ],
+                    "minimum_should_match": 1
+                  }
+                },
+                {
+                  "bool": {
+                    "should": [
+                      {
+                        "term": {
+                          "network.type": {
+                            "value": "ipv4"
+                          }
+                        }
+                      }
+                    ],
+                    "minimum_should_match": 1
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "range": {
+              "@timestamp": {
+                "format": "strict_date_optional_time",
+                "gte": "2024-06-05T20:45:02.000Z",
+                "lte": "2024-06-12T20:45:02.000Z"
+              }
+            }
+          },
+          {
+            "exists": {
+              "field": "source.geo.country_name"
+              }
+          }
+        ],
+        "should": [],
+        "must_not": [
+          {
+            "match_phrase": {
+              "o365.audit.AppAccessContext.ClientAppName": "python-requests"
+            }
+          }
+        ]
+      }
+    },
+      "size": 0,
+    "aggs": {
+      "ips": {
+        "terms": {
+          "field": "related.ip",
+          "size": 5000
+        }
+      },
+      "1": {
+        "cardinality": {
+          "field": "related.ip"
+        }
+      }
+    }
+  }
