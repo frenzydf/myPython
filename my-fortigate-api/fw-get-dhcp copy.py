@@ -1,6 +1,6 @@
 import requests
 import pandas as pd
-#import os
+import os
 
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(category=InsecureRequestWarning)
