@@ -21,10 +21,10 @@ def process_mac(name):
   print(name," No cuenta con reserva")
 
 # Connect to API
-url = "https://192.168.200.1:4443/api/v2/cmdb/system.dhcp/server/8?access_token=p3Qmmkt8cyqzrmbk841yhknp9HbGdH"
-#auth_token = os.environ.get('APIKEY_02')
+url = "https://192.168.200.1:4443/api/v2/cmdb/system.dhcp/server/8"
+auth_token = os.environ.get('APIKEY_02')
 headers = {
-#  'Authorization': 'Bearer '+ auth_token
+  'Authorization': 'Bearer '+ auth_token
 }
 # Define API response
 response = requests.get(url, headers=headers, verify=False)
