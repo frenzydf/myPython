@@ -11,7 +11,7 @@ def connect_to_api() -> Dict[str, any]:
     ip_address = os.environ.get('IP_FGT02')
     admin_port = os.environ.get('ADM_PORT02')
     auth_token = os.environ.get('APIKEY02')
-    url = 'https://{}:{}'.format(ip_address,admin_port)
+    url: str = 'https://{}:{}'.format(ip_address,admin_port)
     headers = {'Authorization': 'Bearer '+auth_token}
     return url, headers
 
@@ -31,7 +31,7 @@ def get_firewall_list() -> Set[str]:
             for r in results
             if r['name'].startswith("IPW_")
             ])
-        logging.info(f'FW - Found {len(set1)} IPW_ Adress Objects')
+        logging.info(f'FW - Found {len(set1)} IPW_ Address Objects')
     except requests.exceptions.RequestException as e:
         logging.error(f'Error fetching data from FW API: {e}')
     return set1
@@ -59,7 +59,7 @@ def fw_del_ip(to_delete_list: List[str]) -> None:
             response = requests.delete(my_url, headers=headers, verify=False)
             count +=1
             print(response)
-    logging.info(f'FW - DEL {count} Address deleted and {skiped} skiped')
+    logging.info(f'FW - DEL {count} Address deleted and {skiped} skipped')
 
 def fw_post_ip(addr_list: List[str]) -> None:
     logging.info(f'FW - POST {len(addr_list)} Address list in progress')
