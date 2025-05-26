@@ -1,0 +1,2 @@
+Archivo: temp1.txt, Bucket: my-document-01
+Archivo: temp2.txt, Bucket: my-document-02
