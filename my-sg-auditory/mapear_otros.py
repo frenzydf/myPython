@@ -132,7 +132,7 @@ def mapear_otros_recursos(sg_fallidos_data, region_name):
             print(f"⚠️ Error fatal en consulta de ENIs en perfil {profile_name}: {e}")
         """    
     # 3. Escribir el output a archivo (Objetivo 3)
-    with open('mapeo_otros.txt', 'w', encoding='utf-8') as f:
+    with open('output/mapeo_otros.txt', 'w', encoding='utf-8') as f:
         for item in all_results:
             # Formato: [SG ID], [Tipo de Recurso], [ID del Recurso], [Tag Entorno Recurso], [Tag Grupo Recurso]
             line = f"{item['SecurityGroupId']}, {item['ResourceType']}, {item['ResourceId']}, {item['EntornoRecurso']}, {item['GrupoRecurso']}\n"

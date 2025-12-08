@@ -63,7 +63,7 @@ def mapear_ec2(sg_fallidos_data, region_name):
                 continue
 
     # 6. Escribir el output a archivo (Objetivo 2)
-    with open('mapeo_ec2.txt', 'w', encoding='utf-8') as f:
+    with open('output/mapeo_ec2.txt', 'w', encoding='utf-8') as f:
         for item in all_results:
             # Formato: [SG ID], [Instance ID], [Tag Entorno Instancia], [Tag Grupo Instancia]
             line = f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, {item['GrupoInst']}\n"

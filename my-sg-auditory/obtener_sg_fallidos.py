@@ -45,7 +45,7 @@ def obtener_sg_fallidos(region_name="us-east-1", control_id="aws-foundational-se
         return []
     print(f"✅ Encontrados {len(sg_fallidos_data)} Security Groups fallidos.")
     # Escribir el output a archivo (Objetivo 1)
-    with open('sg_fallidos.txt', 'w', encoding='utf-8') as f:
+    with open('output/sg_fallidos.txt', 'w', encoding='utf-8') as f:
         for item in sg_fallidos_data:
             # Formato: [SG ID], [Account ID], [Tag Entorno SG], [Tag Grupo SG]
             line = f"{item['SecurityGroupId']}, {item['AccountId']}, {item['EntornoSG']}, {item['GrupoSG']}\n"

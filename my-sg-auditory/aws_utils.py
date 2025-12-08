@@ -15,32 +15,20 @@ ACCOUNT_TO_PROFILE_MAP = {
     ACCOUNT_D: 'security'
 }
 
-# Lista de todos los perfiles de auditoría que deben ser utilizados
 MEMBER_PROFILES = list(ACCOUNT_TO_PROFILE_MAP.values())
 
 def get_profile_name_from_account_id(account_id):
-    """
-    Busca el nombre del perfil de AWS CLI correspondiente a un Account ID.
-    """
     return ACCOUNT_TO_PROFILE_MAP.get(account_id)
 
 def get_tags_from_resource(tags_list, key_entorno='Entorno', key_grupo='Grupo'):
-    """
-    Busca los Tags 'Entorno' y 'Grupo' en una lista estándar de Tags de AWS.
-    """
     entorno = 'None'
     grupo = 'None'
-    
     if not isinstance(tags_list, list):
         tags_list = []
-        
     for tag in tags_list:
         key = tag.get('Key') or tag.get('key')
-        value = tag.get('Value') or tag.get('value')
-        
-        if key == key_entorno:
-            entorno = value
-        elif key == key_grupo:
-            grupo = value
-    
+        value = tag.get('Value') or tag.get('value')        
+        if key == key_entorno: entorno = value
+        elif key == key_grupo: grupo = value
     return entorno, grupo
+
