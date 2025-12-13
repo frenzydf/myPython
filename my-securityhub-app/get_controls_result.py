@@ -1,6 +1,7 @@
 import json
 
-def get_control_findings(securityhub, control_id, standard, title):
+
+def get_control_findings(securityhub, control_id: str, standard: str, title: str) -> dict[str, str]:
     finding_filters = {
         'ComplianceSecurityControlId': [{'Value': control_id, 'Comparison': 'EQUALS'}], 
         'WorkflowStatus': [{'Value': 'SUPPRESSED', 'Comparison': 'NOT_EQUALS'}],
@@ -10,9 +11,7 @@ def get_control_findings(securityhub, control_id, standard, title):
     for page in paginator.paginate(Filters=finding_filters, MaxResults=100):
         findings = page.get('Findings', [])
         for finding in findings:
-
-            finding_data = finding['Compliance']
-            finding_status = finding_data['Status']
+            finding_status = finding['Compliance']['Status']
             if finding_status == 'PASSED': count_passed+=1
             elif finding_status == 'FAILED': count_failed+=1
             elif finding_status == 'WARNING': count_warning+=1
@@ -28,7 +27,7 @@ def get_control_findings(securityhub, control_id, standard, title):
     print(f"{control_id};{title};{control_result};{count_failed};{count_warning};{no_data};{count_passed}")
     return result
 
-def process_all_control(securityhub, security_controls_dict):
+def process_all_control(securityhub, security_controls_dict, account):
     controls_passed=0;controls_failed=0;controls_warning=0;controls_nodata=0
     controls_dict = security_controls_dict['Controls']
     for control_id, data in controls_dict.items():
@@ -39,11 +38,11 @@ def process_all_control(securityhub, security_controls_dict):
                 elif result['ComplianceStatus'] == "Unknown": controls_warning+=1 
                 elif result['ComplianceStatus'] == "Passed": controls_passed+=1 
                 else: controls_nodata+=1
+                security_controls_dict['Controls'][control_id]['results'] = result
             else:print(f"{control_id};{data.get('title')};Disabled;0;0;0;0")
     print(f"PASSED: {controls_passed} FAILED: {controls_failed} WARNINGS: {controls_warning} NO DATA: {controls_nodata}")
+    filename = f"control_status_{account}.json"
+    with open(filename, 'w', encoding='utf-8') as archivo:
+        json.dump(security_controls_dict, archivo, indent=4)
 
 
-            
-
-
-    
