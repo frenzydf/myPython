@@ -7,7 +7,7 @@ def main(account_name):
     try:
         session = boto3.Session(profile_name=account_name)
         securityhub = session.client('securityhub', 'us-east-1')
-        enabled_standards_list = [] #Lista para iterar los standards
+        enabled_standards_list = []
         response = securityhub.get_enabled_standards()
         standards_enabled = response["StandardsSubscriptions"]
         print("-" * 50)
