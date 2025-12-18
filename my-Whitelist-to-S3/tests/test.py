@@ -2,9 +2,9 @@ import requests
 import ipaddress
 
 def api_conection():
-   url = "https://klym.es.us-east1.gcp.elastic-cloud.com:9243/logs-o365.audit-default*/_search"
+   url = "https://"
    headers = {
-    "Authorization": "ApiKey TF9TZURYNEJZMzVDN2EwUlRIY0E6eW5DckFFNzRSei14SEpOQm5Pd0V1QQ==",
+    "Authorization": "ApiKey ",
     "Content-Type": "application/json"
     }
    data = '''
