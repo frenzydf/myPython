@@ -28,4 +28,4 @@ CREATE TABLE dhcp_list(
 );
 
 INSERT INTO intune_users(hostname, macaddress, username, email)
-VALUES("OMNI-001", "11:22:33:44:55", "Usuario Prueba", "usuario.prueba@klym.com");
+VALUES("OMNI-001", "11:22:33:44:55", "Usuario Prueba", "usuario.prueba@test.com");
