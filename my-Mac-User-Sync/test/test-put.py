@@ -47,7 +47,7 @@ payload = json.dumps({
   ]
 })
 headers = {
-  'Authorization': 'Bearer mQdmGf55yfmzyQnqznfb7fGNps6pqq',
+  'Authorization': 'Bearer ',
   'Content-Type': 'application/json'
 }
 
