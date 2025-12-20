@@ -1,4 +1,9 @@
 import json
+import datetime
+import boto3
+import os
+from datetime import datetime
+
 def get_control_findings(securityhub, control_id: str, standard: str, title: str) -> dict[str, str]:
     finding_filters = {
         'ComplianceSecurityControlId': [{'Value': control_id, 'Comparison': 'EQUALS'}], 
@@ -25,14 +30,6 @@ def get_control_findings(securityhub, control_id: str, standard: str, title: str
     result = {"ComplianceStatus": control_result,"passed": count_passed, "failed": count_failed, "warning": count_warning, "no_data": no_data}
     print(f"{control_id};{title};{control_result};{count_failed};{count_warning};{no_data};{count_passed}")
     return result
-
-def upload_file_s3() -> None:
-    bucketname = os.environ.get('SEC_BUCKET')
-    print("S3 - Updating Bucket whitelist")
-    s3 = boto3.resource('s3')
-    s3.Object(bucketname,'Whitelist/IP_WhiteList.txt').delete()
-    s3.meta.client.upload_file('IP_WhiteList.txt',bucketname,'Whitelist/IP_WhiteList.txt')
-    print("S3 - Updated Bucket whitelist complete")
 
 def process_all_control(securityhub, security_controls_dict, account):
     controls_passed=0;controls_failed=0;controls_warning=0;controls_nodata=0

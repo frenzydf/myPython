@@ -7,7 +7,7 @@ def main():
     print("==================================================")
     print("  INICIANDO Security Hub CSPM")
     print("==================================================")
-    account_list = ['vpc2']
+    account_list = ['vpc1']
     mensaje = ""
     for account in account_list:
         print(f"1. Buscando estándares habilitados en {account}")
