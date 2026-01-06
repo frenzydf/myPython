@@ -3,3 +3,4 @@ test*
 *.txt
 __pycache__/
 *.json
+*.log

@@ -1,3 +1,4 @@
+import logging
 import boto3
 import os
 
@@ -15,8 +16,8 @@ def send_sns_notification_with_profile(mensaje):
         session = boto3.Session(profile_name='security')
         sns_client = session.client('sns', 'us-east-1' )
         sns_client.publish(TopicArn=SNS_TOPIC_ARN,Message=mensaje,Subject=ALERT_SUBJECT)
-        print(f"Notificación SNS enviada con éxito.")
+        logging.info(f"Notificación SNS enviada con éxito.")
         return 
     except Exception as e:
-        print(f"Error al enviar la notificación SNS: {e}")
+        logging.error(f"Error al enviar la notificación SNS: {e}")
         return None

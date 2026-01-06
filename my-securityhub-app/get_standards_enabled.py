@@ -1,24 +1,24 @@
 import boto3
-import re
+import logging
 from botocore.exceptions import ClientError
 
 
-def main(account_name):
+def main(securityhub_client, account_name: str) -> list:
+    enabled_standards_list = []
     try:
-        session = boto3.Session(profile_name=account_name)
-        securityhub = session.client('securityhub', 'us-east-1')
-        enabled_standards_list = []
-        response = securityhub.get_enabled_standards()
+        response = securityhub_client.get_enabled_standards()
         standards_enabled = response["StandardsSubscriptions"]
-        print("-" * 50)
         for standard in standards_enabled:
             enabled_standards_list.append(standard['StandardsSubscriptionArn'])
-        print(f"Se encontraron {len(enabled_standards_list)} estándares habilitados.")
-        print("-" * 50)
+        logging.info(f"Se encontraron {len(enabled_standards_list)} estándares habilitados en la cuenta {account_name}.")
+        
     except ClientError as e:
-        print(f"Error de AWS: {e}")
-        print("Se requieren los permisos `securityhub:GetFindings` y región/credenciales correctas.")
+        logging.error(f"Error de AWS (ClientError) al consultar estándares habilitados en la cuenta {account_name}: {e}")
+        raise e
+
     except Exception as e:
-        print(f"Ocurrió un error: {e}")
-    return securityhub, enabled_standards_list
+        logging.error(f"Ocurrió un error: {e}")
+        raise e
+    
+    return enabled_standards_list
     
