@@ -64,6 +64,16 @@ def main(dict_today: dict, account: str) -> dict:
                         'status_today': result_today
                     }
                     logging.info(f"Control {control_id} changed from {result_yesterday} to {result_today}.")
+        else:
+            logging.info(f"Control {control_id} is new today with status {info_today.get('status')}.")
+            cambios[control_id] = {
+                'title': info_today.get('title'),
+                'status_yesterday': 'N/A',
+                'status_today': info_today.get('status')
+            }
+    logging.info(f"Total changes detected: {len(cambios)}")
+    if not cambios:
+        logging.info("No changes found between today and yesterday's control statuses.")
     return cambios
 
     

@@ -20,7 +20,7 @@ def get_account_client(account_name: str) -> boto3.client:
         raise e
 
 def main():
-    account_list = ['vpc1']  
+    account_list = ['vpc1', 'vpc2'] 
     mensaje_final_sns = ""
     for account in account_list:
         try:
@@ -40,7 +40,7 @@ def main():
             cambios_dict = get_findings.main(securityhub_dict, account.upper())
 
             logger.info(f"5. Enviando notificación SNS")
-            mensaje_final_sns += put_sns_notification.build_message(securityhub_dict['General'], account)
+            mensaje_final_sns += put_sns_notification.build_message(securityhub_dict['General'], cambios_dict, account)
 
         except Exception as e:
             logger.error(f"Error procesando la cuenta {account}: {e}")
