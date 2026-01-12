@@ -11,7 +11,7 @@ def build_message(securityhub_dict_general, account):
         cadena_mensaje += f"- {clave}: {valor}\n"
     return cadena_mensaje
 
-def send_sns_notification_with_profile(mensaje):
+def send_sns_notification_with_profile(mensaje: str) -> None:
     try:
         session = boto3.Session(profile_name='security')
         sns_client = session.client('sns', 'us-east-1' )

@@ -5,6 +5,7 @@ import get_standards_enabled
 import get_controls_status
 import get_controls_result
 import put_sns_notification
+import get_findings
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -35,7 +36,10 @@ def main():
             logger.info(f"3. Consultando resultado de controles habilitados")
             securityhub_dict = get_controls_result.process_all_control(securityhub_client, security_controls_dict, account)
 
-            logger.info(f"4. Enviando notificación SNS")
+            logger.info(f"4. Comparando resultados con el día anterior")
+            cambios_dict = get_findings.main(securityhub_dict, account.upper())
+
+            logger.info(f"5. Enviando notificación SNS")
             mensaje_final_sns += put_sns_notification.build_message(securityhub_dict['General'], account)
 
         except Exception as e:
