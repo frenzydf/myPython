@@ -3,7 +3,7 @@ import boto3
 import os
 
 SNS_TOPIC_ARN = os.environ.get('SNS_TOPIC')
-ALERT_SUBJECT = "Postura de Seguridad AWS"
+ALERT_SUBJECT = "TEST Postura de Seguridad AWS"
 
 def build_message(securityhub_dict_general, cambios_dict, account):
     cadena_mensaje = f"Reporte de SecurityHub en {account}:\n"
