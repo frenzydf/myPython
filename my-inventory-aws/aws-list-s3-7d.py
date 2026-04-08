@@ -2,14 +2,13 @@ import boto3
 from datetime import datetime, timedelta, timezone
 from botocore.exceptions import ClientError
 
-def check_public_write(s3_client, bucket_name):
+def check_public_write(s3_client, bucket_name, session):
     """
     Verifica si el bucket permite escritura pública.
     Retorna 'SÍ' si es público o hay riesgo, 'NO' si está protegido.
     """
     try:
         # 1. Verificar el Policy Status (la forma más fiable de AWS)
-        session = boto3.Session(profile_name='vpc1')
         s3_client = session.client('s3')
         status = s3_client.get_bucket_policy_status(Bucket=bucket_name)
         if status['PolicyStatus']['IsPublic']:
@@ -34,8 +33,9 @@ def check_public_write(s3_client, bucket_name):
 
     return "NO"
 
-def list_recent_buckets():
-    s3 = boto3.client('s3')
+def list_recent_buckets(profile_name):
+    session = boto3.Session(profile_name=profile_name)
+    s3 = session.client('s3')
     hace_una_semana = datetime.now(timezone.utc) - timedelta(days=7)
     
     response = s3.list_buckets()
@@ -63,7 +63,7 @@ def list_recent_buckets():
                 pass
 
             # Obtener Escritura Pública
-            escritura_pub = check_public_write(s3, nombre)
+            escritura_pub = check_public_write(s3, nombre, session)
 
             # Formatear fecha
             fecha_fmt = creacion.strftime("%d/%m/%y")
@@ -71,4 +71,7 @@ def list_recent_buckets():
             print(f"{fecha_fmt:<10} | {nombre:<30} | {tags_dict['Entorno']:<10} | {tags_dict['Grupo']:<10} | {escritura_pub}")
 
 if __name__ == "__main__":
-    list_recent_buckets()
+    profile_name = ['vpc1', 'vpc2', 'security'] 
+    for profile in profile_name:
+        print(f"\nPerfil: {profile}")
+        list_recent_buckets(profile)
