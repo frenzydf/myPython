@@ -90,7 +90,7 @@ for f in findings_detail:
     local_port = action.get("LocalPortDetails", {}).get("Port", "")
 
     print(
-        f"MEDIUM / UnauthorizedAccess:EC2/MaliciousIPCaller.Custom / "
+        f"MEDIUM / {FINDING_TYPE} / "
         f"{account_id} / {instance_id} / "
         f"{name_tag} / {entorno_tag} / {grupo_tag} / {remote_ip} /{protocol}-{local_port} / Count:{count}"
     )
