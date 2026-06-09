@@ -47,7 +47,10 @@ for account in accounts:
                     if "IpRanges" in permission and permission["IpRanges"]:
                         for ip_range in permission["IpRanges"]:
                             cidr_ip = ip_range.get("CidrIp")
-                            if cidr_ip == "0.0.0.0/0" and (to_port == 22 or to_port == 3389):
-                                count += 1
-                                print(f"{count}, {resource_arn}, {entorno}, {grupo}, {protocol.upper()}, {from_port}, {to_port}, {cidr_ip}")
+                            # Considerar todos los puertos de riesgo que se encuentran en la lista critical_ports
+                            critical_ports = [20, 21, 22, 23, 25, 110, 135, 143, 445, 1433, 1434, 3000, 3306, 3389, 4333, 5000, 5432, 5500, 5601, 8080, 8088, 8888, 9200, 9300]
+                            if isinstance(from_port, int) and isinstance(to_port, int):
+                                if cidr_ip == "0.0.0.0/0" and any(from_port <= p <= to_port for p in critical_ports):
+                                    count += 1
+                                    print(f"{count}, {resource_arn}, {entorno}, {grupo}, {protocol.upper()}, {from_port}, {to_port}, {cidr_ip}")
 

@@ -20,7 +20,7 @@ for each_region in collect_all_regions:
     print("--------------------------------------------------------------------------------------------")
     print("EC2no\tPrivateIP\tPublicIP\tInstanceId\t     State\t    SecurityGroup\t\tVPC\t\t\t  InstanceType\t  OS")
     print("--------------------------------------------------------------------------------------------")
-    for i in ec2.instances.all():
+    for i in ec2.instances.all(): # type: ignore
         count+=1
         if i.public_ip_address == None:
             public_ip = 'No Ip Assigned'
@@ -66,7 +66,7 @@ for each_region in collect_all_regions:
     print("--------------------------------------------------------------------------------------------")
     print("EIPno\tPrivateIP\tPublicIP\tAllocationId\t\t\tNetworkInterfaceId")
     print("--------------------------------------------------------------------------------------------")
-    for i in ec2.vpc_addresses.all():
+    for i in ec2.vpc_addresses.all(): # type: ignore
         count+=1
         if i.private_ip_address == None:
             private_ip = 'No Ip Assigned'

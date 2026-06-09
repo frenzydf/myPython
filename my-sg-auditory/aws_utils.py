@@ -32,3 +32,16 @@ def get_tags_from_resource(tags_list, key_entorno='Entorno', key_grupo='Grupo'):
         elif key == key_grupo: grupo = value
     return entorno, grupo
 
+def get_tags_from_resource_ec2(tags_list, key_entorno='Entorno', key_grupo='Grupo', key_name='Name'):
+    entorno = 'None'
+    grupo = 'None'
+    name = 'None'
+    if not isinstance(tags_list, list):
+        tags_list = []
+    for tag in tags_list:
+        key = tag.get('Key') or tag.get('key')
+        value = tag.get('Value') or tag.get('value')        
+        if key == key_entorno: entorno = value
+        elif key == key_grupo: grupo = value
+        elif key == key_name: name = value
+    return entorno, grupo, name

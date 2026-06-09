@@ -1,7 +1,7 @@
 # mapear_ec2.py
 import boto3
 from collections import defaultdict
-from aws_utils import get_tags_from_resource
+from aws_utils import get_tags_from_resource_ec2
 
 def chunk_list(lista, tamano_chunk):
     """Divide una lista en trozos del tamaño especificado."""
@@ -46,17 +46,20 @@ def mapear_ec2(sg_fallidos_data, region_name):
                         instance_id = instance['InstanceId']
                         instance_tags = instance.get('Tags', [])
                         
-                        entorno_inst, grupo_inst = get_tags_from_resource(instance_tags)
-                        
+                        entorno_inst, grupo_inst, name_inst = get_tags_from_resource_ec2(instance_tags)
+                        #print(f"   - Instancia {instance_id} asociada a SGs fallidos. Tags: Name={name_inst}, Entorno={entorno_inst}, Grupo={grupo_inst}")
                         # 5. Escribir resultados por cada asociación SG-Instancia
+                        
                         for sg in instance.get('SecurityGroups', []):
                             if sg['GroupId'] in sg_chunk:
                                 all_results.append({
                                     'SecurityGroupId': sg['GroupId'],
                                     'InstanceId': instance_id,
                                     'EntornoInst': entorno_inst,
-                                    'GrupoInst': grupo_inst
+                                    'GrupoInst': grupo_inst,
+                                    'InstanceName': name_inst
                                 })
+                                print(f"   - SG {sg['GroupId']} asociado a Instancia {instance_id}. Tags: Name={name_inst}, Entorno={entorno_inst}, Grupo={grupo_inst}")
             
             except Exception as e:
                 print(f"⚠️ Error al consultar EC2 en perfil {profile_name}: {e}")
@@ -65,8 +68,8 @@ def mapear_ec2(sg_fallidos_data, region_name):
     # 6. Escribir el output a archivo (Objetivo 2)
     with open('output/mapeo_ec2.txt', 'w', encoding='utf-8') as f:
         for item in all_results:
-            # Formato: [SG ID], [Instance ID], [Tag Entorno Instancia], [Tag Grupo Instancia]
-            line = f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, {item['GrupoInst']}\n"
+            # Formato: [SG ID], [Instance ID], [Tag Entorno Instancia], [Tag Grupo Instancia], [Name Instancia]
+            line = f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, {item['GrupoInst']}, {item['InstanceName']}\n"
             f.write(line)
     
     print(f"✅ Encontradas {len(all_results)} asociaciones SG-Instancia.")
