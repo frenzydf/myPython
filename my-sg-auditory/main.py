@@ -5,6 +5,7 @@ import obtener_sg_fallidos
 import mapear_ec2
 import mapear_otros
 import sg_sin_uso
+import sg_critical_ports
 
 # ==============================================================================
 # CONFIGURACIÓN MAESTRA
@@ -27,9 +28,11 @@ def main():
     mapear_otros.mapear_otros_recursos(sg_fallidos_data, AWS_REGION_TO_USE)
     # 4. IDENTIFICACIÓN DE SGs SIN USO (Depende de los outputs de 2 y 3)
     sg_sin_uso.identificar_sg_sin_uso(sg_fallidos_data)
+    # 5. IDENTIFICACIÓN DE SGs CON PUERTOS CRÍTICOS
+    sg_critical_ports.identificar_sg_critical_ports()
     print("\n==================================================")
     print("✅ AUDITORÍA COMPLETA FINALIZADA.")
-    print("   Verifique los archivos: sg_fallidos.txt, mapeo_ec2.txt, mapeo_otros.txt, sg_sin_uso.txt")
+    print("   Verifique los archivos: sg_fallidos.txt, mapeo_ec2.txt, mapeo_otros.txt, sg_sin_uso.txt, sg_critical_ports.txt")
     print("==================================================")
 if __name__ == "__main__":
     main()
