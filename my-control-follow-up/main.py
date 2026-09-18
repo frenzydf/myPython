@@ -87,58 +87,16 @@ def load_controls():
 
 def get_latest_json_files():
 
-    today = datetime.now()
+    # Archivo fijo para pruebas.
+    test_filename = "control_status_VPC1_20260901_120555.json"
+    test_key = f"{S3_BASE_PATH}/2026/09/01/{test_filename}"
 
-    prefix = (
-        f"{S3_BASE_PATH}/"
-        f"{today:%Y}/"
-        f"{today:%m}/"
-        f"{today:%d}/"
-    )
-
-    response = s3_client.list_objects_v2(
-        Bucket=BUCKET_NAME,
-        Prefix=prefix
-    )
-
-    latest_files = {}
-
-    pattern = re.compile(
-        r"control_status_(VPC\d+)_(\d{8})_(\d{6})\.json$"
-    )
-
-    for obj in response.get("Contents", []):
-
-        key = obj["Key"]
-
-        filename = os.path.basename(key)
-
-        match = pattern.search(filename)
-
-        if not match:
-            continue
-
-        account = match.group(1)
-        file_time = match.group(3)
-
-        if account not in latest_files:
-
-            latest_files[account] = {
-                "time": file_time,
-                "key": key
-            }
-
-            continue
-
-        if file_time > latest_files[account]["time"]:
-
-            latest_files[account] = {
-                "time": file_time,
-                "key": key
-            }
-
-    return latest_files
-
+    return {
+        "VPC1": {
+            "time": "120555",
+            "key": test_key
+        }
+    }
 
 def load_json_from_s3(key):
 

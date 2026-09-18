@@ -1,4 +1,5 @@
 import boto3
+import json
 import logging
 
 import get_standards_enabled
@@ -10,7 +11,7 @@ import get_findings
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
-def get_account_client(account_name: str) -> boto3.client:
+def get_account_client(account_name: str):
     try:
         session = boto3.Session(profile_name=account_name)
         securityhub = session.client('securityhub', 'us-east-1')
@@ -41,6 +42,8 @@ def main():
 
             logger.info(f"5. Enviando notificación SNS")
             mensaje_final_sns += put_sns_notification.build_message(securityhub_dict['General'], cambios_dict, account)
+            with open(f"controls_status_{account}.json", "w") as f:
+                json.dump(securityhub_dict, f, indent=4)
 
         except Exception as e:
             logger.error(f"Error procesando la cuenta {account}: {e}")

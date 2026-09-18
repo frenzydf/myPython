@@ -18,7 +18,7 @@ def main(securityhub, standard_enable_list: list) -> dict:
                     status = control.get('ControlStatus', 'N/A')
                     severity = control.get('SeverityRating')
                     remediation = control.get('RemediationUrl', 'N/A')
-                    identificador = remediation.split('/')[-2]
+                    identificador = control.get('ControlId', remediation.split('/')[-2])
                     controls_status[identificador] = {"title": title,"status": status, "severity":severity, "standard": standard_arn}
                     if status == "ENABLED": count_enabled += 1
                     elif status == "DISABLED": count_disabled += 1

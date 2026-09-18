@@ -4,6 +4,7 @@ import logging
 import boto3
 import os
 from datetime import datetime
+from botocore.exceptions import ClientError
 
 def get_control_findings(securityhub, control_id: str, standard: str, title: str) -> dict[str, str]:
     try:
@@ -31,11 +32,11 @@ def get_control_findings(securityhub, control_id: str, standard: str, title: str
         else:control_result='No Data'
         result = {"ComplianceStatus": control_result,"passed": count_passed, "failed": count_failed, "warning": count_warning, "no_data": no_data}
         logging.info(f"{control_id};{title};{control_result};{count_failed};{count_warning};{no_data};{count_passed}")
+    except ClientError as e:
+            logging.error(f"Error de AWS (ClientError) al obtener los hallazgos para el control {control_id}: {e}")
+            result = {"ComplianceStatus": "Error","passed": 0, "failed": 0, "warning": 0, "no_data": 0}
     except Exception as e:
         logging.error(f"Ocurrió un error al obtener los hallazgos para el control {control_id}: {e}")
-        result = {"ComplianceStatus": "Error","passed": 0, "failed": 0, "warning": 0, "no_data": 0}
-    except ClientError as e:
-        logging.error(f"Error de AWS (ClientError) al obtener los hallazgos para el control {control_id}: {e}")
         result = {"ComplianceStatus": "Error","passed": 0, "failed": 0, "warning": 0, "no_data": 0}
     return result
 

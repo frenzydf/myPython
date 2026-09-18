@@ -2,12 +2,15 @@ import json
 import boto3
 import logging
 import os
+from typing import Any
 from datetime import datetime, timedelta
 
-def get_object_list(prefix: str) -> boto3.client:
+def get_object_list(prefix: str) -> tuple[dict[str, Any], str, Any]:
     session = boto3.Session(profile_name='security')
     s3_client = session.client('s3')
     s3_bucket = os.environ.get('S3_BUCKET_NAME')
+    if not s3_bucket:
+        raise ValueError("S3_BUCKET_NAME environment variable is not set")
     response = s3_client.list_objects_v2(Bucket=s3_bucket, Prefix=prefix)
     return response, s3_bucket, s3_client
 
