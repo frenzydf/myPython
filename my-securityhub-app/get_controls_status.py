@@ -8,6 +8,47 @@ from botocore.exceptions import ClientError
 def main(securityhub, standard_enable_list: list) -> dict:
     controls_status = {} #Diccionario para procesar Controles
     controls_status_dict = {"General":{},"StandardsEnabled":{},"Controls":{}} #Diccionario General
+    control_mapper = {
+            "1.12": "IAM.22",
+            "1.19": "IAM.26",
+            "1.20": "IAM.28",
+            "1.22": "IAM.27",
+            "1.8": "IAM.15",
+            "3.8": "S3.22",
+            "3.9": "S3.23",
+            "2.1.1": "S3.5",
+            "2.1.2": "S3.20",
+            "2.1.4.1": "S3.1",
+            "2.1.4.2": "S3.8",
+            "ELBv2.1": "ELB.1",
+            "3.3": "Config.1",
+            "3.6": "KMS.4",
+            "3.2": "CloudTrail.4",
+            "3.1": "CloudTrail.1",
+            "3.5": "CloudTrail.2",
+            "2.2.1": "EC2.7",
+            "5.6": "EC2.8",
+            "5.3": "EC2.54",
+            "5.2": "EC2.53",
+            "2.4.1": "EFS.1",
+            "1.17": "IAM.18",
+            "1.9": "IAM.16",
+            "3.4": "CloudTrail.7",
+            "1.6": "IAM.6",
+            "1.4": "IAM.4",
+            "1.15": "IAM.2",
+            "1.14": "IAM.3",
+            "1.10": "IAM.5",
+            "1.5": "IAM.9",
+            "5.1": "EC2.21",
+            "2.3.2": "RDS.13",
+            "2.3.1": "RDS.3",
+            "2.3.3": "RDS.2",
+            "1.2": "Account.1",
+            "5.4": "EC2.2",
+            "3.7": "EC2.6",
+            "1.14": "IAM.3"
+        }
     try:
         paginator_controls = securityhub.get_paginator('describe_standards_controls')
         for standard_arn in standard_enable_list:
@@ -19,6 +60,8 @@ def main(securityhub, standard_enable_list: list) -> dict:
                     severity = control.get('SeverityRating')
                     remediation = control.get('RemediationUrl', 'N/A')
                     identificador = control.get('ControlId', remediation.split('/')[-2])
+                    if identificador in control_mapper:
+                        identificador = control_mapper[identificador]
                     controls_status[identificador] = {"title": title,"status": status, "severity":severity, "standard": standard_arn}
                     if status == "ENABLED": count_enabled += 1
                     elif status == "DISABLED": count_disabled += 1
