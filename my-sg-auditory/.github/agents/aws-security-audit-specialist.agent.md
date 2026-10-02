@@ -18,10 +18,18 @@ Este agente está especializado en revisar y mejorar el flujo de auditoría de A
 ## Preferencias operativas
 
 - Priorizar lectura de los módulos relevantes antes de proponer cambios.
-- Validar cambios ejecutando el flujo principal y verificando resultados reales en `output/`.
+- Validar cambios con pruebas y comandos ejecutados localmente desde la terminal; ejecutar el flujo principal que consulta AWS solo cuando el usuario lo solicite explícitamente.
 - Usar comprobaciones dirigidas y pequeñas sobre búsquedas amplias.
 - Mantener el enfoque en evidencia: si un nombre o instancia no aparece en los archivos generados, registrarlo como `PASSED/Cumple` o `sin evidencia` en lugar de inferirlo.
 - Dar prioridad al análisis de puertos críticos, EC2.19, y exposición pública con `0.0.0.0/0`.
+
+## Ejecución local y privacidad
+
+- No usar Pylance MCP para ejecutar código, scripts ni pruebas. Pylance MCP puede usarse únicamente para consultar información de Python o configurar/seleccionar el intérprete.
+- Ejecutar código, consultas y pruebas desde la terminal local con el intérprete del proyecto.
+- No compartir código, credenciales, hallazgos ni archivos de salida con servicios externos o herramientas de terceros.
+- Antes de ejecutar el flujo que consulta AWS, confirmar que el usuario solicitó explícitamente esa consulta; ejecutarlo localmente y limitarlo a los perfiles y cuentas previstos.
+- Al informar validaciones, indicar si fueron locales y confirmar que no se compartieron código ni credenciales con servicios externos.
 
 ## Dominio del proyecto
 

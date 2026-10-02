@@ -263,6 +263,7 @@ def _read_instance_mapping(file_path="output/mapeo_ec2.txt"):
                     'EntornoInst': entorno,
                     'GrupoInst': grupo,
                     'InstanceName': name,
+                    'PublicIP': parts[7] if len(parts) > 7 else 'N/A',
                 })
     except FileNotFoundError:
         return defaultdict(list)
@@ -277,6 +278,7 @@ def _write_instance_port_summary(results, nist_findings, output_name):
             'ProfileName': item['ProfileName'],
             'InstanceId': item['InstanceId'],
             'InstanceName': item['InstanceName'],
+            'PublicIP': item['PublicIP'],
             'Ports': set(),
             'SecurityGroups': set(),
             'CIDRs': set(),
@@ -296,7 +298,7 @@ def _write_instance_port_summary(results, nist_findings, output_name):
         file.write('=========================================\n')
         file.write(f"Instancias con puertos criticos: {len(instances)}\n")
         file.write(f"Instancias con NIST EC2.9 FAILED: {exposed_count}\n\n")
-        file.write('Perfil | Instancia | Nombre | Puertos criticos expuestos | SG | CIDR | EC2.9 | Prioridad instancia\n')
+        file.write('Perfil | Instancia | Nombre | Puertos criticos expuestos | SG | CIDR | EC2.9 | Prioridad instancia | PublicIP\n')
 
         for item in sorted(instances.values(), key=lambda value: (value['InstanceId'], value['ProfileName'])):
             if item['NistEc2_9']:
@@ -309,7 +311,7 @@ def _write_instance_port_summary(results, nist_findings, output_name):
                 f"{item['ProfileName']} | {item['InstanceId']} | {item['InstanceName']} | "
                 f"{', '.join(map(str, sorted(item['Ports'])))} | "
                 f"{', '.join(sorted(item['SecurityGroups']))} | {', '.join(sorted(item['CIDRs']))} | "
-                f"{'FAILED' if item['NistEc2_9'] else 'No'} | {instance_priority}\n"
+                f"{'FAILED' if item['NistEc2_9'] else 'No'} | {instance_priority} | {item['PublicIP']}\n"
             )
 
     print(f"   - Resumen por instancia guardado en {summary_path}")
@@ -382,6 +384,7 @@ def identificar_critical_ports_by_instance(region_name="us-east-1", sg_critical=
                 'EntornoInst': instance['EntornoInst'],
                 'GrupoInst': instance['GrupoInst'],
                 'InstanceName': instance['InstanceName'],
+                'PublicIP': instance['PublicIP'],
                 'Protocolo': item['Protocolo'],
                 'PuertoInicial': item['PuertoInicial'],
                 'PuertoFinal': item['PuertoFinal'],
@@ -393,7 +396,7 @@ def identificar_critical_ports_by_instance(region_name="us-east-1", sg_critical=
             })
 
     output_file = os.path.join(OUTPUT_DIR, 'puertos_criticos_por_instancia.txt')
-    header = "No, Perfil, AccountId, Instance ID, Tag Entorno, Tag Grupo, Nombre, SecurityGroupId, Protocolo, Puerto Inicial, Puerto Final, Puertos Criticos, CIDR, Prioridad Puerto, Prioridad Instancia, NIST EC2.9"
+    header = "No, Perfil, AccountId, Instance ID, Tag Entorno, Tag Grupo, Nombre, SecurityGroupId, Protocolo, Puerto Inicial, Puerto Final, Puertos Criticos, CIDR, Prioridad Puerto, Prioridad Instancia, NIST EC2.9, PublicIP"
 
     with open(output_file, 'w', encoding='utf-8') as file:
         file.write(header + "\n")
@@ -404,7 +407,7 @@ def identificar_critical_ports_by_instance(region_name="us-east-1", sg_critical=
                 f"{item['SecurityGroupId']}, {item['Protocolo']}, {item['PuertoInicial']}, "
                 f"{item['PuertoFinal']}, {';'.join(map(str, item['PuertosCriticos']))}, "
                 f"{item['CIDR']}, {item['Prioridad']}, {item['PrioridadInstancia']}, "
-                f"{'FAILED' if item['NistEc2_9'] else 'No'}\n"
+                f"{'FAILED' if item['NistEc2_9'] else 'No'}, {item['PublicIP']}\n"
             )
             file.write(line)
 

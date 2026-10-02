@@ -37,6 +37,16 @@ def mapear_ec2(sg_fallidos_data, region_name):
             print(f"❌ ERROR: No se pudo crear la sesión con el perfil {profile_name}. Razón: {e}")
             continue
 
+        try:
+            addresses = ec2_client.describe_addresses().get('Addresses', [])
+            elastic_ips = {
+                address['InstanceId']: address['PublicIp']
+                for address in addresses
+                if address.get('InstanceId') and address.get('PublicIp')
+            }
+        except Exception as e:
+            print(f"⚠️ No se pudieron consultar Elastic IPs en el perfil {profile_name}: {e}")
+            elastic_ips = {}
         # 3. Consultar EC2 en lotes (chunks) de 200
         for sg_chunk in chunk_list(sg_ids, 200):
             try:
@@ -48,6 +58,7 @@ def mapear_ec2(sg_fallidos_data, region_name):
                     for instance in reservation.get('Instances', []):
                         # 4. Procesar la instancia y extraer sus tags
                         instance_id = instance['InstanceId']
+                        public_ip = elastic_ips.get(instance_id) or instance.get('PublicIpAddress') or 'N/A'
                         instance_tags = instance.get('Tags', [])
                         
                         entorno_inst, grupo_inst, name_inst = get_tags_from_resource_ec2(instance_tags)
@@ -63,7 +74,8 @@ def mapear_ec2(sg_fallidos_data, region_name):
                                     'GrupoInst': grupo_inst,
                                     'InstanceName': name_inst,
                                     'AccountId': sg_metadata.get((profile_name, sg['GroupId']), {}).get('AccountId', 'None'),
-                                    'ProfileName': profile_name
+                                    'ProfileName': profile_name,
+                                    'PublicIP': public_ip
                                 })
                                 print(f"   - SG {sg['GroupId']} asociado a Instancia {instance_id}. Tags: Name={name_inst}, Entorno={entorno_inst}, Grupo={grupo_inst}")
             
@@ -74,11 +86,11 @@ def mapear_ec2(sg_fallidos_data, region_name):
     # 6. Escribir el output a archivo (Objetivo 2)
     with open('output/mapeo_ec2.txt', 'w', encoding='utf-8') as f:
         for item in all_results:
-            # Formato: SG, instancia, tags, nombre, cuenta y perfil.
+            # Formato: SG, instancia, tags, nombre, cuenta, perfil e IP pública.
             line = (
                 f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, "
                 f"{item['GrupoInst']}, {item['InstanceName']}, {item['AccountId']}, "
-                f"{item['ProfileName']}\n"
+                f"{item['ProfileName']}, {item['PublicIP']}\n"
             )
             f.write(line)
     
