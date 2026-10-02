@@ -13,6 +13,7 @@ ABUSEIPDB_API_KEY = os.getenv("ABUSE_APIKEY")
 
 IPS_FILE = "ips.txt"
 OUTPUT_FILE = "resultados-ip.txt"
+VT_FREE_SLEEP_SECONDS = 15
 
 # ==========================
 # VIRUSTOTAL
@@ -112,8 +113,16 @@ def main():
 
     for ip in ips:
 
-        vt = consultar_virustotal(ip)
+        # Primero consultar AbuseIPDB. Si el score es 0, entonces se hace
+        # una segunda verificación con VirusTotal para evitar usar la API
+        # gratuita de VT en todas las IPs.
         abuse = consultar_abuseipdb(ip)
+        vt = {"malicious": 0, "suspicious": 0}
+
+        if abuse["abuse_score"] == 0:
+            print(f"[INFO] AbuseIPDB score 0 para {ip}; consultando VirusTotal como segunda opinión...")
+            time.sleep(VT_FREE_SLEEP_SECONDS)  # espera requerida por la cuenta gratuita de VT
+            vt = consultar_virustotal(ip)
 
         # Score combinado
         score = (
@@ -134,9 +143,10 @@ def main():
         print(resultado)
 
         if score > 0:
-            resultados_positivos.append(resultado)
+            ip_con_mascara = f"{ip}/32"
+            resultados_positivos.append(ip_con_mascara)
 
-        # Evitar rate limiting
+        # Evitar rate limiting general
         time.sleep(1)
 
     with open(OUTPUT_FILE, "w") as f:
@@ -149,6 +159,9 @@ def main():
 
     print("\nArchivo generado:", OUTPUT_FILE)
     print("IPs con score > 0:", len(resultados_positivos))
+    print("\nIPs positivas:")
+    for ip in resultados_positivos:
+        print(ip)
 
 
 if __name__ == "__main__":
