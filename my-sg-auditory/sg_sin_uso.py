@@ -1,7 +1,10 @@
 # sg_sin_uso.py
 from collections import defaultdict
 
-def identificar_sg_sin_uso(sg_fallidos_data, mapeo_ec2_file='mapeo_ec2.txt', mapeo_otros_file='mapeo_otros.txt'):
+OUTPUT_DIR = 'output'
+
+
+def identificar_sg_sin_uso(sg_fallidos_data, mapeo_ec2_file=f'{OUTPUT_DIR}/mapeo_ec2.txt', mapeo_otros_file=f'{OUTPUT_DIR}/mapeo_otros.txt'):
     print("\n--- 4. Ejecutando: Identificación de SGs sin Uso ---")
     # 1. Obtener la lista maestra de SGs (SG ID: {metadata})
     sg_maestro = {item['SecurityGroupId']: item for item in sg_fallidos_data}
