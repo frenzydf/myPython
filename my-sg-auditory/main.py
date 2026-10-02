@@ -1,5 +1,4 @@
 # main.py
-# La función get_profile_to_account_map ya no es necesaria
 
 import obtener_sg_fallidos
 import mapear_ec2
@@ -29,10 +28,12 @@ def main():
     # 4. IDENTIFICACIÓN DE SGs SIN USO (Depende de los outputs de 2 y 3)
     sg_sin_uso.identificar_sg_sin_uso(sg_fallidos_data)
     # 5. IDENTIFICACIÓN DE SGs CON PUERTOS CRÍTICOS
-    sg_critical_ports.identificar_sg_critical_ports()
+    sg_critical = sg_critical_ports.identificar_sg_critical_ports()
+    # 6. IDENTIFICACIÓN DE PUERTOS CRÍTICOS POR INSTANCIA (reutiliza el resultado previo)
+    sg_critical_ports.identificar_critical_ports_by_instance(region_name=AWS_REGION_TO_USE, sg_critical=sg_critical)
     print("\n==================================================")
     print("✅ AUDITORÍA COMPLETA FINALIZADA.")
-    print("   Verifique los archivos: sg_fallidos.txt, mapeo_ec2.txt, mapeo_otros.txt, sg_sin_uso.txt, sg_critical_ports.txt")
+    print("   Reportes en output/: puertos_criticos_por_instancia_resumen.txt, instancias_nist_ec2_9.txt")
     print("==================================================")
 if __name__ == "__main__":
     main()

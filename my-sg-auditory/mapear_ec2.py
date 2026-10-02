@@ -20,6 +20,10 @@ def mapear_ec2(sg_fallidos_data, region_name):
         sgs_por_profile[sg['ProfileName']].append(sg)
     
     all_results = []
+    sg_metadata = {
+        (sg['ProfileName'], sg['SecurityGroupId']): sg
+        for sg in sg_fallidos_data
+    }
     
     # 2. Iterar por cada perfil para crear la sesión de auditoría
     for profile_name, sg_list in sgs_por_profile.items():
@@ -57,7 +61,9 @@ def mapear_ec2(sg_fallidos_data, region_name):
                                     'InstanceId': instance_id,
                                     'EntornoInst': entorno_inst,
                                     'GrupoInst': grupo_inst,
-                                    'InstanceName': name_inst
+                                    'InstanceName': name_inst,
+                                    'AccountId': sg_metadata.get((profile_name, sg['GroupId']), {}).get('AccountId', 'None'),
+                                    'ProfileName': profile_name
                                 })
                                 print(f"   - SG {sg['GroupId']} asociado a Instancia {instance_id}. Tags: Name={name_inst}, Entorno={entorno_inst}, Grupo={grupo_inst}")
             
@@ -68,8 +74,12 @@ def mapear_ec2(sg_fallidos_data, region_name):
     # 6. Escribir el output a archivo (Objetivo 2)
     with open('output/mapeo_ec2.txt', 'w', encoding='utf-8') as f:
         for item in all_results:
-            # Formato: [SG ID], [Instance ID], [Tag Entorno Instancia], [Tag Grupo Instancia], [Name Instancia]
-            line = f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, {item['GrupoInst']}, {item['InstanceName']}\n"
+            # Formato: SG, instancia, tags, nombre, cuenta y perfil.
+            line = (
+                f"{item['SecurityGroupId']}, {item['InstanceId']}, {item['EntornoInst']}, "
+                f"{item['GrupoInst']}, {item['InstanceName']}, {item['AccountId']}, "
+                f"{item['ProfileName']}\n"
+            )
             f.write(line)
     
     print(f"✅ Encontradas {len(all_results)} asociaciones SG-Instancia.")

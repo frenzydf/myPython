@@ -3,19 +3,19 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
-# Mapeo de Account ID a ProfileName 
+# Mapeo de Account ID a ProfileName
+# Solo se auditan las cuentas de vpc1 y vpc2.
+# El perfil de seguridad se usa exclusivamente para consultar Security Hub.
 ACCOUNT_A = os.environ.get('AccountId_1')
 ACCOUNT_B = os.environ.get('AccountId_2')
-ACCOUNT_C = os.environ.get('AccountId_3')
-ACCOUNT_D = os.environ.get('AccountId_4')
+
 ACCOUNT_TO_PROFILE_MAP = {
     ACCOUNT_A: 'vpc1',
     ACCOUNT_B: 'vpc2',
-    ACCOUNT_C: 'pocbd',
-    ACCOUNT_D: 'security'
 }
 
-MEMBER_PROFILES = list(ACCOUNT_TO_PROFILE_MAP.values())
+SECURITY_HUB_PROFILE = 'security'
+MEMBER_PROFILES = ['vpc1', 'vpc2']
 
 def get_profile_name_from_account_id(account_id):
     return ACCOUNT_TO_PROFILE_MAP.get(account_id)

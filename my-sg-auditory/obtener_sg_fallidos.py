@@ -1,8 +1,6 @@
 # obtener_sg_fallidos.py
 import boto3
-from aws_utils import get_tags_from_resource, get_profile_name_from_account_id
-
-SECURITY_HUB_PROFILE = 'securityhub'
+from aws_utils import get_tags_from_resource, get_profile_name_from_account_id, SECURITY_HUB_PROFILE
 
 def obtener_sg_fallidos(region_name="us-east-1", control_id="aws-foundational-security-best-practices/v/1.0.0/EC2.19"):
     print(f"\n--- 1. Ejecutando: Obtener SG Fallidos de Security Hub ({region_name}) ---")
