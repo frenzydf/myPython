@@ -9,6 +9,7 @@ Flujo:
   3. Imprime el contenido de abuseip_results.txt
 """
 
+import argparse
 import subprocess
 import sys
 from pathlib import Path
@@ -18,16 +19,50 @@ SCRIPTS = [
     "abuse_ip_block.py",
 ]
 RESULTS_FILE = Path("abuseip_results.txt")
+WEEKLY_WAF_QUERY = "WAF/Weekly Top IP Report"
 
 
-def run_script(script: str) -> None:
+def parse_args() -> argparse.Namespace:
+    p = argparse.ArgumentParser(
+        description="Pipeline IoC → AbuseIPDB. Por defecto usa el query de test-query.txt.")
+    src = p.add_mutually_exclusive_group()
+    src.add_argument("--query-file", help="Archivo con el query (default: test-query.txt)")
+    src.add_argument("--saved-query", metavar="NAME",
+                     help="Saved query de CloudWatch, p. ej. 'WAF/Weekly Top IP Report'")
+    src.add_argument("--weekly-waf", action="store_true",
+                     help=f"Atajo para --saved-query '{WEEKLY_WAF_QUERY}'")
+    p.add_argument("--window", help="Ventana hacia atrás (5m, 12h, 7d)")
+    p.add_argument("--log-group", action="append", default=[],
+                   help="Log group (repetible); reemplaza a los del query")
+    p.add_argument("--ip-field", help="Columna del resultado con la IP (default: ClientIP)")
+    return p.parse_args()
+
+
+def build_cw_args(args: argparse.Namespace) -> list[str]:
+    """Traduce los argumentos de main.py a los de cw_query_to_ips.py."""
+    out: list[str] = []
+    saved = WEEKLY_WAF_QUERY if args.weekly_waf else args.saved_query
+    if saved:
+        out += ["--saved-query", saved]
+    elif args.query_file:
+        out += ["--query-file", args.query_file]
+    if args.window:
+        out += ["--window", args.window]
+    for lg in args.log_group:
+        out += ["--log-group", lg]
+    if args.ip_field:
+        out += ["--ip-field", args.ip_field]
+    return out
+
+
+def run_script(script: str, extra_args: list[str] | None = None) -> None:
     """Ejecuta un script Python como subproceso y transmite su salida en tiempo real."""
     print(f"\n{'=' * 60}")
-    print(f"  Ejecutando: {script}")
+    print(f"  Ejecutando: {script} {' '.join(extra_args or [])}")
     print(f"{'=' * 60}\n")
 
     result = subprocess.run(
-        [sys.executable, script],
+        [sys.executable, script, *(extra_args or [])],
         # Hereda el entorno actual (incluye ABUSE_APIKEY y credenciales AWS)
         env=None,
     )
@@ -55,11 +90,15 @@ def print_results(path: Path) -> None:
 
 
 def main() -> None:
+    args = parse_args()
+    cw_args = build_cw_args(args)
+
     for script in SCRIPTS:
         if not Path(script).exists():
             print(f"[ERROR] No se encontró el script '{script}'.")
             sys.exit(1)
-        run_script(script)
+        # Solo el primer script (consulta a CloudWatch) recibe los argumentos
+        run_script(script, cw_args if script == "cw_query_to_ips.py" else None)
 
     print_results(RESULTS_FILE)
 
