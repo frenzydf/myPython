@@ -12,6 +12,8 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 INPUT_FILE = "ips.txt"
 OUTPUT_FILE = "abuseip_results.txt"
+RANKING_FILE = "abuseip_ranking.csv"
+RIESGO_MAX = 100 * 5 + 20   # score 100 con >= 20 reportes = 520
 API_URL = "https://api.abuseipdb.com/api/v2/check"
 MAX_AGE_DAYS = 90
 SLEEP_SECONDS = 1  # 20-150 IPs: 1s es suficiente para no golpear rate limit
@@ -51,6 +53,11 @@ def clasificar_riesgo(riesgo: int) -> str:
         return "SOSPECHOSO"
     else:
         return "ALTO"
+
+
+def ponderar_score(riesgo: int) -> int:
+    """Normaliza el riesgo ponderado (0-520) a un score entero de 0 a 10."""
+    return max(0, min(10, round(riesgo * 10 / RIESGO_MAX)))
 
 
 def debe_bloquear(score: int, riesgo: int) -> bool:
@@ -123,11 +130,22 @@ for ip in ips:
     except requests.exceptions.RequestException as e:
         print(f"[{counter}] {ip} → Request Error: {e}")
 
-# Salida tipo CSV en TXT
-with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
-    out.write("#,IP,Score\n")
-    for r in results:
-        if r[6]:  # Solo guarda IPs con BLOCK=True  
-            out.write(f"{r[1]}/32\n")
+# Salida 1: archivo para waf_update_ipset.py (una IP/32 por línea; '#' = comentario)
+blocked = [r for r in results if r[6]]
 
-print(f"\nResultados guardados en: {OUTPUT_FILE}")
+with open(OUTPUT_FILE, "w", encoding="utf-8") as out:
+    out.write("# IPs a bloquear (formato WAF IPSet)\n")
+    for r in blocked:
+        out.write(f"{r[1]}/32\n")
+
+# Salida 2: ranking CSV, score ponderado 0-10 (entero), de mayor a menor
+ranking = sorted(blocked, key=lambda r: (ponderar_score(r[4]), r[4], r[3]), reverse=True)
+
+with open(RANKING_FILE, "w", encoding="utf-8") as out:
+    out.write("#,IP,Score\n")
+    for pos, r in enumerate(ranking, start=1):
+        out.write(f"{pos},{r[1]},{ponderar_score(r[4])}\n")
+
+print(f"\nIPs evaluadas: {len(results)} | A bloquear: {len(blocked)}")
+print(f"Archivo para WAF : {OUTPUT_FILE}")
+print(f"Ranking (CSV)    : {RANKING_FILE}")

@@ -194,7 +194,16 @@ def run_query(query: str, log_groups: list[str], start_offset: int, end_offset: 
 
 
 def parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Ejecuta un query de CloudWatch Logs Insights y genera ips.txt")
+    p = argparse.ArgumentParser(
+        description="Ejecuta un query de CloudWatch Logs Insights (archivo o saved query) y "
+                    f"escribe las IPs del resultado en {OUTPUT_FILE}.",
+        epilog="ejemplos:\n"
+               "  python cw_query_to_ips.py\n"
+               "  python cw_query_to_ips.py --saved-query \"WAF/Weekly Top IP Report\" --window 3d\n"
+               "  python cw_query_to_ips.py --query-file test-query-sb-prd.txt --ip-field ClientIP\n\n"
+               "ventana: <numero><unidad> con unidad s, m, h, d o w (5m, 12h, 7d, 1w).",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     src = p.add_mutually_exclusive_group()
     src.add_argument("--query-file", default=QUERY_FILE,
                      help=f"Archivo con el query (default: {QUERY_FILE})")
