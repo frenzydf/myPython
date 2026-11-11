@@ -6,3 +6,5 @@ __pycache__/
 *.log
 *.csv
 *_report*
+*.xls
+*.xlsx
