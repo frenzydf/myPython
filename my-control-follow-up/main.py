@@ -22,11 +22,21 @@ ACCOUNT_PROFILES = [
     "vpc2"
 ]
 
-EXCEL_FILE = r"G:\Mi unidad\Belcorp\Seguimiento controles.xlsx"
+def get_required_env(name):
+    """Obtiene una variable de entorno obligatoria o termina con error claro."""
+    value = os.environ.get(name, "").strip()
+    if not value:
+        raise SystemExit(
+            f"Variable de entorno requerida no definida: {name}"
+        )
+    return value
 
-BUCKET_NAME = "belc-securityhub-cspm"
 
-S3_BASE_PATH = "securityhub-cspm"
+EXCEL_FILE = get_required_env("EXCEL_FILE")
+
+BUCKET_NAME = get_required_env("BUCKET_NAME")
+
+S3_BASE_PATH = get_required_env("S3_BASE_PATH").strip("/")
 
 OUTPUT_FILE = (
     f"securityhub_findings_"
